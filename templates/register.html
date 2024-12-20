@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">تسجيل حساب جديد</h2>
+                
+                <!-- Social Login Buttons -->
+                <div class="social-login mb-4">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('google_login') }}" class="btn btn-danger">
+                            <i class="fab fa-google me-2"></i>تسجيل باستخدام Google
+                        </a>
+                        <a href="{{ url_for('github_login') }}" class="btn btn-dark">
+                            <i class="fab fa-github me-2"></i>تسجيل باستخدام GitHub
+                        </a>
+                    </div>
+                </div>
+
+                <div class="text-center mb-4">
+                    <span class="divider-text">أو</span>
+                </div>
+
+                <!-- Regular Registration Form -->
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">اسم المستخدم</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">كلمة المرور</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <div class="form-text">كلمة المرور يجب أن تحتوي على 8 أحرف على الأقل</div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">تسجيل</button>
+                    </div>
+                </form>
+
+                <div class="mt-3 text-center">
+                    <p>لديك حساب بالفعل؟ <a href="{{ url_for('login') }}">تسجيل الدخول</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom styles -->
+<style>
+.social-login .btn {
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.divider-text {
+    position: relative;
+    display: inline-block;
+    padding: 0 10px;
+    color: #6c757d;
+    background: #fff;
+}
+.divider-text:before,
+.divider-text:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 100px;
+    height: 1px;
+    background: #dee2e6;
+}
+.divider-text:before {
+    right: 100%;
+}
+.divider-text:after {
+    left: 100%;
+}
+</style>
+{% endblock %}

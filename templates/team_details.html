@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">{{ team.name }}</h2>
+                <h6 class="card-subtitle mb-2 text-muted">{{ team.sector }}</h6>
+                <p class="card-text">{{ team.description }}</p>
+                
+                <div class="mt-4">
+                    <h4>أعضاء الفريق</h4>
+                    <ul class="list-group">
+                        {% for member in team.members %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ member.username }}
+                            {% if member.id == team.creator_id %}
+                            <span class="badge bg-primary rounded-pill">مؤسس</span>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                {% if current_user.is_authenticated and current_user not in team.members %}
+                <div class="mt-4">
+                    <a href="{{ url_for('join_team', team_id=team.id) }}" class="btn btn-success">انضم للفريق</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">معلومات الفريق</h5>
+                <p class="card-text">
+                    <strong>تاريخ الإنشاء:</strong> {{ team.created_at.strftime('%Y-%m-%d') }}<br>
+                    <strong>عدد الأعضاء:</strong> {{ team.members|length }}<br>
+                    <strong>المؤسس:</strong> {{ team.creator.username }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

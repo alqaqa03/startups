@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Search Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h2 class="display-4 mb-3">Find Team Members</h2>
+            <p class="lead text-muted">Search for potential teammates based on skills, location, or interests</p>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <form action="{{ url_for('search') }}" method="get" class="card shadow-sm">
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="text" 
+                                       name="q" 
+                                       class="form-control" 
+                                       id="searchQuery"
+                                       placeholder="Search by name or bio"
+                                       value="{{ request.args.get('q', '') }}">
+                                <label for="searchQuery">Search by name or bio</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="text" 
+                                       name="skills" 
+                                       class="form-control" 
+                                       id="skills"
+                                       placeholder="Skills (comma-separated)"
+                                       value="{{ request.args.get('skills', '') }}">
+                                <label for="skills">Skills</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="text" 
+                                       name="location" 
+                                       class="form-control" 
+                                       id="location"
+                                       placeholder="Location"
+                                       value="{{ request.args.get('location', '') }}">
+                                <label for="location">Location</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center">
+                            <button type="submit" class="btn btn-primary w-100 py-3">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="row g-4">
+        {% for user in users %}
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm hover-shadow transition-all">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        {% if user.profile_picture %}
+                        <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" 
+                             class="rounded-circle me-3 shadow-sm" 
+                             style="width: 80px; height: 80px; object-fit: cover;">
+                        {% else %}
+                        <div class="rounded-circle bg-gradient me-3 d-flex align-items-center justify-content-center text-white"
+                             style="width: 80px; height: 80px; background: linear-gradient(45deg, #3a7bd5, #00d2ff);">
+                            <i class="fas fa-user fa-2x"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <div>
+                            <h4 class="card-title h5 mb-1">
+                                <a href="{{ url_for('profile', username=user.username) }}" 
+                                   class="text-decoration-none text-dark">
+                                    {{ user.username }}
+                                </a>
+                            </h4>
+                            {% if user.location %}
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-map-marker-alt text-danger"></i> 
+                                {{ user.location }}
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if user.bio %}
+                    <p class="card-text mb-4">
+                        <i class="fas fa-quote-left text-muted me-2"></i>
+                        {{ user.bio[:150] }}{% if user.bio|length > 150 %}...{% endif %}
+                    </p>
+                    {% endif %}
+
+                    {% if user.skills %}
+                    <div class="mb-4">
+                        <h6 class="text-muted mb-3">Skills</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for skill in user.skills[:5] %}
+                            <span class="badge bg-light text-dark border">{{ skill }}</span>
+                            {% endfor %}
+                            {% if user.skills|length > 5 %}
+                            <span class="badge bg-secondary">+{{ user.skills|length - 5 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2 mt-auto">
+                        <a href="{{ url_for('profile', username=user.username) }}" 
+                           class="btn btn-primary">
+                            <i class="fas fa-user me-2"></i>View Profile
+                        </a>
+                        <div class="btn-group">
+                            {% if user.linkedin_url %}
+                            <a href="{{ user.linkedin_url }}" 
+                               target="_blank" 
+                               class="btn btn-outline-secondary">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            {% endif %}
+                            {% if user.github_url %}
+                            <a href="{{ user.github_url }}" 
+                               target="_blank" 
+                               class="btn btn-outline-secondary">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not users %}
+    <div class="text-center mt-5">
+        <div class="mb-4">
+            <i class="fas fa-search fa-3x text-muted"></i>
+        </div>
+        <h3 class="h4 mb-3">No Results Found</h3>
+        <p class="text-muted">
+            Try adjusting your search criteria or explore different skills and locations.
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add custom CSS -->
+{% block extra_css %}
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+    .transition-all {
+        transition: all .3s ease;
+    }
+    .card {
+        border-radius: 1rem;
+        border: none;
+    }
+    .form-floating > .form-control {
+        border-radius: 0.75rem;
+    }
+    .btn {
+        border-radius: 0.75rem;
+    }
+</style>
+{% endblock %}
+{% endblock %}

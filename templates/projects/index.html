@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <h1 class="display-4 mb-3">لوحة المشاريع</h1>
+            <p class="lead text-muted">اكتشف المشاريع المثيرة وانضم إلى الفرق المبدعة</p>
+        </div>
+        {% if current_user.is_authenticated %}
+        <div class="col-lg-4 text-end">
+            <a href="{{ url_for('create_project') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus-circle me-2"></i>إنشاء مشروع جديد
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Project Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="searchQuery" placeholder="البحث">
+                                <label for="searchQuery">البحث في المشاريع</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <select class="form-select" id="roleFilter">
+                                    <option value="">الكل</option>
+                                    <option value="developer">مطور</option>
+                                    <option value="designer">مصمم</option>
+                                    <option value="marketing">تسويق</option>
+                                </select>
+                                <label for="roleFilter">الدور المطلوب</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">الكل</option>
+                                    <option value="open">مفتوح</option>
+                                    <option value="in_progress">قيد التنفيذ</option>
+                                    <option value="completed">مكتمل</option>
+                                </select>
+                                <label for="statusFilter">حالة المشروع</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center">
+                            <button type="submit" class="btn btn-primary w-100 py-3">
+                                <i class="fas fa-filter me-2"></i>تصفية
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="row g-4">
+        {% for project in projects %}
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm hover-shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">
+                            <a href="{{ url_for('project_details', project_id=project.id) }}" class="text-decoration-none text-dark">
+                                {{ project.title }}
+                            </a>
+                        </h5>
+                        <span class="badge bg-{{ 'success' if project.status == 'open' else 'warning' if project.status == 'in_progress' else 'secondary' }}">
+                            {{ project.status }}
+                        </span>
+                    </div>
+                    
+                    <p class="card-text text-muted mb-3">{{ project.description[:200] }}{% if project.description|length > 200 %}...{% endif %}</p>
+                    
+                    {% if project.required_roles %}
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">الأدوار المطلوبة:</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for role in project.required_roles %}
+                            <span class="badge bg-light text-dark border">{{ role.title }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex align-items-center text-muted small mb-3">
+                        <div class="me-3">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ project.start_date.strftime('%Y/%m/%d') }} - {{ project.end_date.strftime('%Y/%m/%d') }}
+                        </div>
+                        <div>
+                            <i class="fas fa-users me-1"></i>
+                            {{ project.team_members|length }} أعضاء
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('project_details', project_id=project.id) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-info-circle me-1"></i>
+                            التفاصيل
+                        </a>
+                        <div class="d-flex align-items-center">
+                            <img src="{{ url_for('static', filename='uploads/' + project.creator.profile_picture) if project.creator.profile_picture else 'https://via.placeholder.com/32' }}" 
+                                 class="rounded-circle me-2" 
+                                 width="32" 
+                                 height="32"
+                                 alt="{{ project.creator.username }}">
+                            <span class="text-muted">{{ project.creator.username }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not projects %}
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="fas fa-project-diagram fa-3x text-muted"></i>
+        </div>
+        <h3 class="h4 mb-3">لا توجد مشاريع حالياً</h3>
+        <p class="text-muted">كن أول من ينشئ مشروعاً جديداً!</p>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('create_project') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>إنشاء مشروع
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any JavaScript for filtering and search here
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">الفرق المتاحة</h1>
+        
+        <div class="row">
+            {% for team in teams %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ team.name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ team.sector }}</h6>
+                        <p class="card-text">{{ team.description[:100] }}...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('team_details', team_id=team.id) }}" class="btn btn-primary">التفاصيل</a>
+                            <small class="text-muted">{{ team.members|length }} عضو</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="text-center mt-3">
+                    {% if user.profile_picture %}
+                        <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" 
+                             class="rounded-circle" alt="صورة الملف الشخصي" 
+                             style="width: 200px; height: 200px; object-fit: cover;">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='default_profile.png') }}" 
+                             class="rounded-circle" alt="صورة افتراضية" 
+                             style="width: 200px; height: 200px; object-fit: cover;">
+                    {% endif %}
+                </div>
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ user.username }}</h3>
+                    {% if current_user.is_authenticated and current_user.id == user.id %}
+                        <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">تعديل الملف الشخصي</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">نبذة شخصية</h5>
+                    <p class="card-text">{{ user.bio or 'لا توجد نبذة شخصية بعد' }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">المهارات</h5>
+                    {% if user.skills %}
+                        <div class="row">
+                            {% for category, skills in user.skills.items() %}
+                                <div class="col-md-6 mb-3">
+                                    <h6>{{ category|title }}</h6>
+                                    <ul class="list-unstyled">
+                                        {% for skill in skills %}
+                                            <li><span class="badge bg-primary">{{ skill }}</span></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>لم يتم إضافة مهارات بعد</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">الاهتمامات</h5>
+                    <p class="card-text">{{ user.interests or 'لم يتم إضافة اهتمامات بعد' }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">الخبرات السابقة</h5>
+                    <p class="card-text">{{ user.experience or 'لم يتم إضافة خبرات بعد' }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">الشهادات والروابط</h5>
+                    <p class="card-text">{{ user.certificates or 'لم يتم إضافة شهادات بعد' }}</p>
+                    <div class="mt-3">
+                        {% if user.linkedin_url %}
+                            <a href="{{ user.linkedin_url }}" target="_blank" class="btn btn-outline-primary me-2">
+                                <i class="fab fa-linkedin"></i> LinkedIn
+                            </a>
+                        {% endif %}
+                        {% if user.github_url %}
+                            <a href="{{ user.github_url }}" target="_blank" class="btn btn-outline-dark">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

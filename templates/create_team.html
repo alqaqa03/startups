@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">إنشاء فريق جديد</h2>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">اسم الفريق</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">وصف الفريق</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sector" class="form-label">القطاع</label>
+                        <select class="form-select" id="sector" name="sector" required>
+                            <option value="">اختر القطاع</option>
+                            <option value="إعلام">إعلام</option>
+                            <option value="برمجيات">برمجيات</option>
+                            <option value="ألعاب إلكترونية">ألعاب إلكترونية</option>
+                            <option value="تجارة إلكترونية">تجارة إلكترونية</option>
+                            <option value="تعليم">تعليم</option>
+                            <option value="صحة">صحة</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">إنشاء الفريق</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="display-4 mb-4">إنشاء مشروع جديد</h1>
+            
+            <form method="POST" class="needs-validation" novalidate>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">معلومات المشروع الأساسية</h5>
+                        
+                        <div class="mb-4">
+                            <label for="title" class="form-label">عنوان المشروع</label>
+                            <input type="text" class="form-control form-control-lg" id="title" name="title" required>
+                            <div class="invalid-feedback">يرجى إدخال عنوان المشروع</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label">وصف المشروع</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+                            <div class="invalid-feedback">يرجى إدخال وصف المشروع</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="start_date" class="form-label">تاريخ البدء</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                <div class="invalid-feedback">يرجى تحديد تاريخ البدء</div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="end_date" class="form-label">تاريخ الانتهاء المتوقع</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date" required>
+                                <div class="invalid-feedback">يرجى تحديد تاريخ الانتهاء</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">أهداف المشروع</h5>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="addGoal">
+                                <i class="fas fa-plus me-1"></i>إضافة هدف
+                            </button>
+                        </div>
+                        
+                        <div id="goalsContainer">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" name="goals[]" placeholder="أدخل هدفاً للمشروع" required>
+                                <button class="btn btn-outline-danger remove-goal" type="button">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">الأدوار المطلوبة</h5>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="addRole">
+                                <i class="fas fa-plus me-1"></i>إضافة دور
+                            </button>
+                        </div>
+                        
+                        <div id="rolesContainer">
+                            <div class="role-entry border rounded p-3 mb-3">
+                                <div class="mb-3">
+                                    <label class="form-label">عنوان الدور</label>
+                                    <input type="text" class="form-control" name="role_title[]" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">وصف الدور</label>
+                                    <textarea class="form-control" name="role_description[]" rows="2" required></textarea>
+                                </div>
+                                <button type="button" class="btn btn-outline-danger btn-sm remove-role">
+                                    <i class="fas fa-times me-1"></i>حذف الدور
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('projects') }}" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-arrow-right me-2"></i>رجوع
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-check me-2"></i>إنشاء المشروع
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+
+    // Add goal
+    document.getElementById('addGoal').addEventListener('click', function() {
+        const container = document.getElementById('goalsContainer');
+        const newGoal = document.createElement('div');
+        newGoal.className = 'input-group mb-3';
+        newGoal.innerHTML = `
+            <input type="text" class="form-control" name="goals[]" placeholder="أدخل هدفاً للمشروع" required>
+            <button class="btn btn-outline-danger remove-goal" type="button">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        container.appendChild(newGoal);
+    });
+
+    // Remove goal
+    document.getElementById('goalsContainer').addEventListener('click', function(e) {
+        if (e.target.closest('.remove-goal')) {
+            const goalEntry = e.target.closest('.input-group');
+            if (document.querySelectorAll('#goalsContainer .input-group').length > 1) {
+                goalEntry.remove();
+            }
+        }
+    });
+
+    // Add role
+    document.getElementById('addRole').addEventListener('click', function() {
+        const container = document.getElementById('rolesContainer');
+        const newRole = document.createElement('div');
+        newRole.className = 'role-entry border rounded p-3 mb-3';
+        newRole.innerHTML = `
+            <div class="mb-3">
+                <label class="form-label">عنوان الدور</label>
+                <input type="text" class="form-control" name="role_title[]" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">وصف الدور</label>
+                <textarea class="form-control" name="role_description[]" rows="2" required></textarea>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm remove-role">
+                <i class="fas fa-times me-1"></i>حذف الدور
+            </button>
+        `;
+        container.appendChild(newRole);
+    });
+
+    // Remove role
+    document.getElementById('rolesContainer').addEventListener('click', function(e) {
+        if (e.target.closest('.remove-role')) {
+            const roleEntry = e.target.closest('.role-entry');
+            if (document.querySelectorAll('#rolesContainer .role-entry').length > 1) {
+                roleEntry.remove();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

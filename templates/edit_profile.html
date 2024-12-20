@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="text-center mb-4">تعديل الملف الشخصي</h2>
+    
+    <form method="POST" enctype="multipart/form-data">
+        <div class="row">
+            <!-- Basic Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">المعلومات الأساسية</h3>
+                        
+                        <!-- Profile Picture -->
+                        <div class="mb-3">
+                            <label for="profile_picture" class="form-label">الصورة الشخصية</label>
+                            <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*">
+                            {% if current_user.profile_picture %}
+                            <div class="mt-2">
+                                <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" 
+                                     alt="Profile Picture" class="img-thumbnail" style="max-width: 150px;">
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">نبذة شخصية</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="3">{{ current_user.bio }}</textarea>
+                        </div>
+
+                        <!-- Professional Links -->
+                        <div class="mb-3">
+                            <label for="linkedin_url" class="form-label">LinkedIn رابط</label>
+                            <input type="url" class="form-control" id="linkedin_url" name="linkedin_url" 
+                                   value="{{ current_user.linkedin_url }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="github_url" class="form-label">GitHub رابط</label>
+                            <input type="url" class="form-control" id="github_url" name="github_url" 
+                                   value="{{ current_user.github_url }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="portfolio_url" class="form-label">رابط المعرض الشخصي</label>
+                            <input type="url" class="form-control" id="portfolio_url" name="portfolio_url" 
+                                   value="{{ current_user.portfolio_url }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills and Interests -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">المهارات والاهتمامات</h3>
+                        
+                        <!-- Technical Skills -->
+                        <div class="mb-3">
+                            <label class="form-label">المهارات التقنية</label>
+                            <div id="technical_skills_container">
+                                {% if current_user.skills and current_user.skills.technical %}
+                                    {% for skill in current_user.skills.technical %}
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" name="technical_skills[]" value="{{ skill }}">
+                                        <button type="button" class="btn btn-danger" onclick="removeSkill(this)">حذف</button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm" 
+                                    onclick="addSkill('technical_skills_container', 'technical_skills[]')">
+                                إضافة مهارة تقنية
+                            </button>
+                        </div>
+
+                        <!-- Design Skills -->
+                        <div class="mb-3">
+                            <label class="form-label">مهارات التصميم</label>
+                            <div id="design_skills_container">
+                                {% if current_user.skills and current_user.skills.design %}
+                                    {% for skill in current_user.skills.design %}
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" name="design_skills[]" value="{{ skill }}">
+                                        <button type="button" class="btn btn-danger" onclick="removeSkill(this)">حذف</button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm" 
+                                    onclick="addSkill('design_skills_container', 'design_skills[]')">
+                                إضافة مهارة تصميم
+                            </button>
+                        </div>
+
+                        <!-- Marketing Skills -->
+                        <div class="mb-3">
+                            <label class="form-label">مهارات التسويق</label>
+                            <div id="marketing_skills_container">
+                                {% if current_user.skills and current_user.skills.marketing %}
+                                    {% for skill in current_user.skills.marketing %}
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" name="marketing_skills[]" value="{{ skill }}">
+                                        <button type="button" class="btn btn-danger" onclick="removeSkill(this)">حذف</button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm" 
+                                    onclick="addSkill('marketing_skills_container', 'marketing_skills[]')">
+                                إضافة مهارة تسويق
+                            </button>
+                        </div>
+
+                        <!-- Management Skills -->
+                        <div class="mb-3">
+                            <label class="form-label">مهارات الإدارة</label>
+                            <div id="management_skills_container">
+                                {% if current_user.skills and current_user.skills.management %}
+                                    {% for skill in current_user.skills.management %}
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" name="management_skills[]" value="{{ skill }}">
+                                        <button type="button" class="btn btn-danger" onclick="removeSkill(this)">حذف</button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm" 
+                                    onclick="addSkill('management_skills_container', 'management_skills[]')">
+                                إضافة مهارة إدارة
+                            </button>
+                        </div>
+
+                        <!-- Interests -->
+                        <div class="mb-3">
+                            <label class="form-label">الاهتمامات</label>
+                            <div id="interests_container">
+                                {% if current_user.interests %}
+                                    {% for interest in current_user.interests %}
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" name="interests[]" value="{{ interest }}">
+                                        <button type="button" class="btn btn-danger" onclick="removeSkill(this)">حذف</button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm" 
+                                    onclick="addSkill('interests_container', 'interests[]')">
+                                إضافة اهتمام
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Experience -->
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">الخبرات السابقة</h3>
+                        <div id="experience_container">
+                            {% if current_user.experience %}
+                                {% for exp in current_user.experience %}
+                                <div class="experience-entry border p-3 mb-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">المسمى الوظيفي</label>
+                                        <input type="text" class="form-control" name="exp_title[]" value="{{ exp.title }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">الشركة</label>
+                                        <input type="text" class="form-control" name="exp_company[]" value="{{ exp.company }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">التاريخ</label>
+                                        <input type="text" class="form-control" name="exp_date[]" value="{{ exp.date }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">الوصف</label>
+                                        <textarea class="form-control" name="exp_description[]" rows="3">{{ exp.description }}</textarea>
+                                    </div>
+                                    <button type="button" class="btn btn-danger" onclick="removeExperience(this)">حذف الخبرة</button>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="addExperience()">إضافة خبرة</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificates -->
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">الشهادات</h3>
+                        <div id="certificates_container">
+                            {% if current_user.certificates %}
+                                {% for cert in current_user.certificates %}
+                                <div class="certificate-entry border p-3 mb-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">اسم الشهادة</label>
+                                        <input type="text" class="form-control" name="cert_name[]" value="{{ cert.name }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">الجهة المانحة</label>
+                                        <input type="text" class="form-control" name="cert_issuer[]" value="{{ cert.issuer }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">تاريخ الحصول عليها</label>
+                                        <input type="text" class="form-control" name="cert_date[]" value="{{ cert.date }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">رابط الشهادة</label>
+                                        <input type="url" class="form-control" name="cert_url[]" value="{{ cert.url }}">
+                                    </div>
+                                    <button type="button" class="btn btn-danger" onclick="removeCertificate(this)">حذف الشهادة</button>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="addCertificate()">إضافة شهادة</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">حفظ التغييرات</button>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript for dynamic form fields -->
+<script>
+function addSkill(containerId, inputName) {
+    const container = document.getElementById(containerId);
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2';
+    div.innerHTML = `
+        <input type="text" class="form-control" name="${inputName}">
+        <button type="button" class="btn btn-danger" onclick="removeSkill(this)">حذف</button>
+    `;
+    container.appendChild(div);
+}
+
+function removeSkill(button) {
+    button.parentElement.remove();
+}
+
+function addExperience() {
+    const container = document.getElementById('experience_container');
+    const div = document.createElement('div');
+    div.className = 'experience-entry border p-3 mb-3';
+    div.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">المسمى الوظيفي</label>
+            <input type="text" class="form-control" name="exp_title[]">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">الشركة</label>
+            <input type="text" class="form-control" name="exp_company[]">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">التاريخ</label>
+            <input type="text" class="form-control" name="exp_date[]">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">الوصف</label>
+            <textarea class="form-control" name="exp_description[]" rows="3"></textarea>
+        </div>
+        <button type="button" class="btn btn-danger" onclick="removeExperience(this)">حذف الخبرة</button>
+    `;
+    container.appendChild(div);
+}
+
+function removeExperience(button) {
+    button.parentElement.remove();
+}
+
+function addCertificate() {
+    const container = document.getElementById('certificates_container');
+    const div = document.createElement('div');
+    div.className = 'certificate-entry border p-3 mb-3';
+    div.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">اسم الشهادة</label>
+            <input type="text" class="form-control" name="cert_name[]">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">الجهة المانحة</label>
+            <input type="text" class="form-control" name="cert_issuer[]">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">تاريخ الحصول عليها</label>
+            <input type="text" class="form-control" name="cert_date[]">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">رابط الشهادة</label>
+            <input type="url" class="form-control" name="cert_url[]">
+        </div>
+        <button type="button" class="btn btn-danger" onclick="removeCertificate(this)">حذف الشهادة</button>
+    `;
+    container.appendChild(div);
+}
+
+function removeCertificate(button) {
+    button.parentElement.remove();
+}
+</script>
+{% endblock %}
